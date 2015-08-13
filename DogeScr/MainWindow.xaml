@@ -1,0 +1,14 @@
+﻿<Window x:Class="DogeScr.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525" 
+        AllowsTransparency="True" WindowStyle="None">
+    <Window.Background>
+        <SolidColorBrush Opacity="0.1" Color="Gray"/>
+    </Window.Background>
+    <Window.Resources>
+    </Window.Resources>
+    <Grid Name="MainGrid" MouseMove="MainGrid_MouseMove">
+        <Label Name="label1" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFFFF5B5"/>
+    </Grid>
+</Window>
