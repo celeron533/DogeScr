@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows.Media;
+using System.Xml.Serialization;
 
 namespace DogeScr.Core
 {
@@ -11,12 +12,12 @@ namespace DogeScr.Core
         public TextTile() : base()
         {
             tileType = TileType.Text;
-            font = SystemFonts.DefaultFont;
+            fontSize = 36;
         }
 
         public string text { get; set; }
-        public Font font { get; set; }
-        public Color backgroundColor { get; set; }
-        public Color forgroundColor { get; set; }
+        public double fontSize { get; set; }
+        public Color background { get; set; }
+        public Color forground { get; set; }
     }
 }

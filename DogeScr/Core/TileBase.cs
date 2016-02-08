@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 
 namespace DogeScr.Core
 {
+    [Serializable]
     public class TileBase
     {
         public TileType tileType { get; set; }
@@ -16,8 +17,9 @@ namespace DogeScr.Core
 
         public TileBase()
         {
+            //set default values
             opacity = 1;
-            animation = new TileAnimation();
+            animation = new TileAnimation(0, 0, 1000);
         }
     }
 

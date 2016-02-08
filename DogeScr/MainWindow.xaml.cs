@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +30,6 @@ namespace DogeScr
         }
 
         private Configuration configuration;
-        private DoubleAnimation animationTemplate = new DoubleAnimation();
         public TileGenerator generator;
 
         private void InitWindowSize()
@@ -37,40 +37,76 @@ namespace DogeScr
             // fullscreen
             this.Left = 0;
             this.Top = 0;
-            this.Width= SystemParameters.VirtualScreenWidth;
-            this.Height= SystemParameters.VirtualScreenHeight;
+            this.Width = SystemParameters.VirtualScreenWidth;
+            this.Height = SystemParameters.VirtualScreenHeight;
         }
 
 
         private void Init()
         {
-            //configuration = Configuration.Load<Configuration>("C:\\a.xml");
-            //configuration.Save<Configuration>("C:\\a.xml");
-            generator = new TileGenerator(null, 10, (int)this.Width, (int)this.Height);
+            configuration = new Configuration();
+            configuration.tileList = new List<TileBase>();
+            configuration.useUniversalAnimation = true;
+            configuration.universalAnimation = new TileAnimation(100, 100, 2000);
+
+            #region tiles
+            ImageTile it = new ImageTile();
+            it.imagePath = @"pack://application:,,,/"
+                             + Assembly.GetExecutingAssembly().GetName().Name
+                             + ";component/"
+                             + "Resources/Gabe.png";
+            it.imageSize = new System.Drawing.Size(120, 100);
+            configuration.tileList.Add(it);
+
+            TextTile tt = new TextTile();
+            tt.text = "-66%";
+            tt.forground = Colors.White;
+            tt.background = Colors.DarkGreen;
+            configuration.tileList.Add(tt);
+
+            #endregion
+
+            //configuration = Configuration.Load<Configuration>("D:\\a.xml");
+            try
+            {
+                //configuration.Save<Configuration>("D:\\a.xml");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            generator = new TileGenerator(configuration.tileList, 10, (int)this.Width, (int)this.Height);
             generator.WorkerEvent += generator_WorkerEvent;
             generator.Start();
         }
 
+#if DEBUG
         //get current process
         System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
+        long maxMemory = 0;
+#endif
         void generator_WorkerEvent(object sender, TileGenerator.WorkerEventArgs e)
         {
 
-            TileStoryboard defaultStoryboard = new TileStoryboard(e.element, 100, 100, 800);
-                AddElement(e.element.Uid, e.element, MainGrid);
-                defaultStoryboard.Completed += delegate { 
-                    RemoveElement(e.element.Uid, MainGrid);
-                };
+            TileStoryboard tileStoryboard = new TileStoryboard(e.element, 100, 100, 800);
+            //add an tile element and auto remove when completed
+            AddElement(e.element.Uid, e.element, MainGrid);
+            tileStoryboard.Completed += delegate
+            {
+                RemoveElement(e.element.Uid, MainGrid);
+            };
+            //begin animation
+            tileStoryboard.Begin();
 
-            defaultStoryboard.Begin();
-
-            long usedMemory = proc.PrivateMemorySize64 / 1024 / 1024  ;
-            if (usedMemory > max) max = usedMemory;
-            label1.Content = (DateTime.Now - proc.StartTime) + "\n"+
-                usedMemory.ToString()+" MB\nMax: "+max.ToString();
+#if DEBUG
+            long usedMemory = proc.PrivateMemorySize64 / 1024 / 1024;
+            if (usedMemory > maxMemory) maxMemory = usedMemory;//I don't care the thread lock
+            label1.Content = (DateTime.Now - proc.StartTime) + "\n" +
+                usedMemory.ToString() + " MB\nMax: " + maxMemory.ToString();
+#endif
         }
-        long max = 0;
-        
+
+
 
 
         /// <summary>
@@ -83,7 +119,7 @@ namespace DogeScr
         {
             panel.Children.Add(element);
             panel.RegisterName(uid, element);
-            Console.Out.WriteLine("create "+uid);
+            Console.Out.WriteLine("create " + uid);
         }
 
         /// <summary>
@@ -98,14 +134,14 @@ namespace DogeScr
             {
                 panel.Children.Remove(element);
                 panel.UnregisterName(uid);
-                Console.Out.WriteLine("remove "+uid);
+                Console.Out.WriteLine("remove " + uid);
             }
         }
 
         private void MainGrid_MouseMove(object sender, MouseEventArgs e)
         {
 
-                //Environment.Exit(0);
+            //Environment.Exit(0);
 
         }
     }

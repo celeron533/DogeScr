@@ -8,6 +8,9 @@ using System.Xml.Serialization;
 namespace DogeScr.Core
 {
     [Serializable]
+    [XmlInclude(typeof(TileBase))]
+    [XmlInclude(typeof(ImageTile))]
+    [XmlInclude(typeof(TextTile))]
     [XmlRoot]
     public class Configuration : PersistableObject
     {
@@ -23,7 +26,7 @@ namespace DogeScr.Core
         public List<TileBase> tileList { get; set; }
         
 
-        public void Create()
+        public void CreateDefault()
         {
             throw new NotImplementedException();
         }

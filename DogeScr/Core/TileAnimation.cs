@@ -15,5 +15,14 @@ namespace DogeScr.Core
         public int fadeOutDuration { set; get; }
         [XmlElement]
         public int stayDuration { set; get; }
+
+        public TileAnimation() { }
+
+        public TileAnimation(int fadeInDuration, int fadeOutDuration, int stayDuration)
+        {
+            this.fadeInDuration = fadeInDuration;
+            this.fadeOutDuration = fadeOutDuration;
+            this.stayDuration = stayDuration;
+        }
     }
 }

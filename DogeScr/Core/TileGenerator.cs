@@ -16,12 +16,8 @@ namespace DogeScr.Core
         public delegate void WorkerEventHandler(object sender, WorkerEventArgs e);
         public event WorkerEventHandler WorkerEvent;
 
-        public List<string> phraseList = new List<string>();
-
         Random random = new Random(System.DateTime.Now.Millisecond);
         DispatcherTimer timer = new DispatcherTimer();
-
-        const string dogeImage = "[dogeImage]";
 
         /// <summary>
         /// Generate qualified labels
@@ -30,55 +26,66 @@ namespace DogeScr.Core
         public TileGenerator(List<TileBase> tileList, int interval,
             int screenWidth, int screenHeight)
         {
-            phraseList.Add("-10%");
-            phraseList.Add("-20%");
-            phraseList.Add("-25%");
-            phraseList.Add("-33%");
-            phraseList.Add("-50%");
-            phraseList.Add("-75%");
-            phraseList.Add("-85%");
-            phraseList.Add("-66%");
-            phraseList.Add(dogeImage);
+
             //
-            ImageSource src = new BitmapImage(new Uri(@"pack://application:,,,/"
-                             + Assembly.GetExecutingAssembly().GetName().Name
-                             + ";component/"
-                             + "Resources/Gabe.png", UriKind.Absolute));
+            //ImageSource src = new BitmapImage(new Uri(@"pack://application:,,,/"
+            //                 + Assembly.GetExecutingAssembly().GetName().Name
+            //                 + ";component/"
+            //                 + "Resources/Gabe.png", UriKind.Absolute));
 
             timer.Interval = new TimeSpan(interval * 1000 * 10);
             timer.Tick += delegate
             {
                 //random
-                string nextPharse = phraseList[random.Next(phraseList.Count)];
+                TileBase nextTile = tileList[random.Next(tileList.Count)];
                 int positionX = random.Next(screenWidth);
                 int positionY = random.Next(screenHeight);
                 Color randomColor = Color.FromScRgb(1, (float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
                 randomColor = Color.FromRgb(255, 255, 255);//
 
-                Label myLabel = new Label();
-                myLabel.Uid = "a_" + System.Guid.NewGuid().ToString().Replace("-", "");
+                Label tileLabel = new Label();
+                tileLabel.Uid = "a_" + Guid.NewGuid().ToString().Replace("-", "");
+                tileLabel.VerticalAlignment = VerticalAlignment.Top;
+                tileLabel.HorizontalAlignment = HorizontalAlignment.Left;
+                tileLabel.Margin = new Thickness(positionX, positionY, 0, 0);
 
                 //image or text
-                if (string.Compare(nextPharse, dogeImage) == 0)
+                switch (nextTile.tileType)
                 {
-                    myLabel.Background = new ImageBrush(src);
-                    myLabel.Width = src.Width / 1;
-                    myLabel.Height = src.Height / 1;
-                    myLabel.Opacity = 0.8;
-                }
-                else
-                {
-                    myLabel.Content = nextPharse;
-                    myLabel.FontSize = 36;
-                    myLabel.Foreground = new SolidColorBrush(randomColor);
-                    myLabel.Background = new SolidColorBrush(Color.FromRgb(75, 107, 32));
+                    case TileType.Image:
+                        ImageTile imageTile = (ImageTile)nextTile;
+                        tileLabel.Background = new ImageBrush( new BitmapImage(new Uri(imageTile.imagePath, UriKind.Absolute)));
+                        tileLabel.Width = imageTile.imageSize.Width;
+                        tileLabel.Height = imageTile.imageSize.Height;
+                        tileLabel.Opacity = imageTile.opacity;
+                        break;
+                    case TileType.Text:
+                        TextTile textTile = (TextTile)nextTile;
+                        tileLabel.Content = textTile.text;
+                        tileLabel.Background = new SolidColorBrush(textTile.background);
+                        tileLabel.Foreground = new SolidColorBrush(textTile.forground);
+                        tileLabel.FontSize = textTile.fontSize;
+                        break;
+                    default://undefined TileType
+                        return;
                 }
 
-                myLabel.VerticalAlignment = VerticalAlignment.Top;
-                myLabel.HorizontalAlignment = HorizontalAlignment.Left;
-                myLabel.Margin = new Thickness(positionX, positionY, 0, 0);
+                //if (string.Compare(nextPharse, dogeImage) == 0)
+                //{
+                //    tileLabel.Background = new ImageBrush(src);
+                //    tileLabel.Width = src.Width / 1;
+                //    tileLabel.Height = src.Height / 1;
+                //    tileLabel.Opacity = 0.8;
+                //}
+                //else
+                //{
+                //    tileLabel.Content = nextPharse;
+                //    tileLabel.FontSize = 36;
+                //    tileLabel.Foreground = new SolidColorBrush(randomColor);
+                //    tileLabel.Background = new SolidColorBrush(Color.FromRgb(75, 107, 32));
+                //}
 
-                WorkerEvent(this, new WorkerEventArgs() { element = myLabel });
+                WorkerEvent(this, new WorkerEventArgs() { element = tileLabel });
                 //GC.Collect(GC.MaxGeneration);
             };
 
