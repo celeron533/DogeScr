@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DogeScr.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,15 +24,15 @@ namespace DogeScr
         public MainWindow()
         {
             InitializeComponent();
-            InitWindow();
+            InitWindowSize();
             Init();
         }
 
         private Configuration configuration;
         private DoubleAnimation animationTemplate = new DoubleAnimation();
-        public Generator generator;
+        public TileGenerator generator;
 
-        private void InitWindow()
+        private void InitWindowSize()
         {
             // fullscreen
             this.Left = 0;
@@ -45,17 +46,17 @@ namespace DogeScr
         {
             //configuration = Configuration.Load<Configuration>("C:\\a.xml");
             //configuration.Save<Configuration>("C:\\a.xml");
-            generator = new Generator(1, (int)this.Width, (int)this.Height);
+            generator = new TileGenerator(null, 10, (int)this.Width, (int)this.Height);
             generator.WorkerEvent += generator_WorkerEvent;
             generator.Start();
         }
 
         //get current process
         System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
-        void generator_WorkerEvent(object sender, Generator.WorkerEventArgs e)
+        void generator_WorkerEvent(object sender, TileGenerator.WorkerEventArgs e)
         {
 
-            DefaultStoryboard defaultStoryboard = new DefaultStoryboard(e.element, 1, 1, 500);
+            TileStoryboard defaultStoryboard = new TileStoryboard(e.element, 100, 100, 800);
                 AddElement(e.element.Uid, e.element, MainGrid);
                 defaultStoryboard.Completed += delegate { 
                     RemoveElement(e.element.Uid, MainGrid);
@@ -109,3 +110,8 @@ namespace DogeScr
         }
     }
 }
+
+
+
+
+// by celeron533

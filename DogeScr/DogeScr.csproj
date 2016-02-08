@@ -58,9 +58,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Configuration.cs" />
-    <Compile Include="DefaultStoryboard.cs" />
-    <Compile Include="Generator.cs" />
+    <Compile Include="Core\Configuration.cs" />
+    <Compile Include="Core\ImageTile.cs" />
+    <Compile Include="Core\TextTile.cs" />
+    <Compile Include="Core\TileAnimation.cs" />
+    <Compile Include="Core\TileBase.cs" />
+    <Compile Include="Core\TileStoryboard.cs" />
+    <Compile Include="Core\TileGenerator.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -95,7 +99,11 @@
     <Content Include="Resources\doge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Gabe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
