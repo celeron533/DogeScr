@@ -18,6 +18,9 @@ namespace DogeScr.Core
         public string text { get; set; }
         public double fontSize { get; set; }
         public Color background { get; set; }
-        public Color forground { get; set; }
+        public bool randomBackground { get; set; }
+        public Color foreground { get; set; }
+        public bool randomForeground { get; set; }
+
     }
 }

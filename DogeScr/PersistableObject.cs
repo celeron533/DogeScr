@@ -22,7 +22,7 @@ namespace DogeScr
 
         public void Save<T>(string fileName) where T : PersistableObject
         {
-            using (FileStream stream = new FileStream(fileName, FileMode.OpenOrCreate))
+            using (FileStream stream = new FileStream(fileName, FileMode.Create))
             {
                 new XmlSerializer(typeof(T)).Serialize(stream, this);
             }

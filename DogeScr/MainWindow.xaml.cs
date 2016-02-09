@@ -25,12 +25,15 @@ namespace DogeScr
         public MainWindow()
         {
             InitializeComponent();
+            //currently only support one mornitor
             InitWindowSize();
             Init();
         }
 
         private Configuration configuration;
         public TileGenerator generator;
+        public readonly string StartupDir = AppDomain.CurrentDomain.BaseDirectory + "\\";
+        public const string configFileName = "config.xml";
 
         private void InitWindowSize()
         {
@@ -44,32 +47,21 @@ namespace DogeScr
 
         private void Init()
         {
-            configuration = new Configuration();
-            configuration.tileList = new List<TileBase>();
-            configuration.useUniversalAnimation = true;
-            configuration.universalAnimation = new TileAnimation(100, 100, 2000);
-
-            #region tiles
-            ImageTile it = new ImageTile();
-            it.imagePath = @"pack://application:,,,/"
-                             + Assembly.GetExecutingAssembly().GetName().Name
-                             + ";component/"
-                             + "Resources/Gabe.png";
-            it.imageSize = new System.Drawing.Size(120, 100);
-            configuration.tileList.Add(it);
-
-            TextTile tt = new TextTile();
-            tt.text = "-66%";
-            tt.forground = Colors.White;
-            tt.background = Colors.DarkGreen;
-            configuration.tileList.Add(tt);
-
-            #endregion
-
-            //configuration = Configuration.Load<Configuration>("D:\\a.xml");
             try
             {
-                //configuration.Save<Configuration>("D:\\a.xml");
+                configuration = Configuration.Load<Configuration>(StartupDir + configFileName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                configuration = new Configuration();
+                configuration.CreateDefault();
+            }
+
+
+            try
+            {
+                configuration.Save<Configuration>(StartupDir + configFileName);
             }
             catch (Exception e)
             {

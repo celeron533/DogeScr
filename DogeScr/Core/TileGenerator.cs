@@ -27,12 +27,6 @@ namespace DogeScr.Core
             int screenWidth, int screenHeight)
         {
 
-            //
-            //ImageSource src = new BitmapImage(new Uri(@"pack://application:,,,/"
-            //                 + Assembly.GetExecutingAssembly().GetName().Name
-            //                 + ";component/"
-            //                 + "Resources/Gabe.png", UriKind.Absolute));
-
             timer.Interval = new TimeSpan(interval * 1000 * 10);
             timer.Tick += delegate
             {
@@ -40,8 +34,6 @@ namespace DogeScr.Core
                 TileBase nextTile = tileList[random.Next(tileList.Count)];
                 int positionX = random.Next(screenWidth);
                 int positionY = random.Next(screenHeight);
-                Color randomColor = Color.FromScRgb(1, (float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
-                randomColor = Color.FromRgb(255, 255, 255);//
 
                 Label tileLabel = new Label();
                 tileLabel.Uid = "a_" + Guid.NewGuid().ToString().Replace("-", "");
@@ -54,7 +46,9 @@ namespace DogeScr.Core
                 {
                     case TileType.Image:
                         ImageTile imageTile = (ImageTile)nextTile;
-                        tileLabel.Background = new ImageBrush( new BitmapImage(new Uri(imageTile.imagePath, UriKind.Absolute)));
+                        tileLabel.Background = new ImageBrush(new BitmapImage(new Uri
+                            (new Uri(AppDomain.CurrentDomain.BaseDirectory), imageTile.imagePath)
+                            ));
                         tileLabel.Width = imageTile.imageSize.Width;
                         tileLabel.Height = imageTile.imageSize.Height;
                         tileLabel.Opacity = imageTile.opacity;
@@ -62,31 +56,27 @@ namespace DogeScr.Core
                     case TileType.Text:
                         TextTile textTile = (TextTile)nextTile;
                         tileLabel.Content = textTile.text;
-                        tileLabel.Background = new SolidColorBrush(textTile.background);
-                        tileLabel.Foreground = new SolidColorBrush(textTile.forground);
                         tileLabel.FontSize = textTile.fontSize;
+
+                        tileLabel.Background = new SolidColorBrush(textTile.background);
+                        if (textTile.randomBackground)
+                            tileLabel.Background = new SolidColorBrush(
+                                Color.FromScRgb(1, (float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble())
+                                );
+
+                        tileLabel.Foreground = new SolidColorBrush(textTile.foreground);
+                        if (textTile.randomForeground)
+                            tileLabel.Foreground = new SolidColorBrush(
+                                Color.FromScRgb(1, (float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble())
+                                );
+
                         break;
                     default://undefined TileType
                         return;
                 }
 
-                //if (string.Compare(nextPharse, dogeImage) == 0)
-                //{
-                //    tileLabel.Background = new ImageBrush(src);
-                //    tileLabel.Width = src.Width / 1;
-                //    tileLabel.Height = src.Height / 1;
-                //    tileLabel.Opacity = 0.8;
-                //}
-                //else
-                //{
-                //    tileLabel.Content = nextPharse;
-                //    tileLabel.FontSize = 36;
-                //    tileLabel.Foreground = new SolidColorBrush(randomColor);
-                //    tileLabel.Background = new SolidColorBrush(Color.FromRgb(75, 107, 32));
-                //}
-
                 WorkerEvent(this, new WorkerEventArgs() { element = tileLabel });
-                //GC.Collect(GC.MaxGeneration);
+
             };
 
 
