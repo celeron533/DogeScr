@@ -23,11 +23,15 @@ namespace DogeScr.Core
         /// Generate qualified labels
         /// </summary>
         /// <param name="interval"></param>
-        public TileGenerator(List<TileBase> tileList, int interval,
+        public TileGenerator(Configuration config, 
             int screenWidth, int screenHeight)
         {
+            //clone the original list
+            List<TileBase> tileList = config.tileList.ToList();
+            if (config.useUniversalAnimation)
+                tileList.ForEach(tile => tile.animation = config.universalAnimation);
 
-            timer.Interval = new TimeSpan(interval * 1000 * 10);
+            timer.Interval = new TimeSpan(config.interval * 1000 * 10);
             timer.Tick += delegate
             {
                 //random

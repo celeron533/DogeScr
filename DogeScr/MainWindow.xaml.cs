@@ -67,7 +67,7 @@ namespace DogeScr
             {
                 Console.WriteLine(e.ToString());
             }
-            generator = new TileGenerator(configuration.tileList, 10, (int)this.Width, (int)this.Height);
+            generator = new TileGenerator(configuration, (int)this.Width, (int)this.Height);
             generator.WorkerEvent += generator_WorkerEvent;
             generator.Start();
         }

@@ -23,6 +23,9 @@ namespace DogeScr.Core
         public TileAnimation universalAnimation { get; set; }
         #endregion
 
+        [XmlElement]
+        public int interval { get; set; }
+
         [XmlArrayItem]
         public List<TileBase> tileList { get; set; }
 
@@ -32,6 +35,7 @@ namespace DogeScr.Core
             this.tileList = new List<TileBase>();
             this.useUniversalAnimation = false;
             this.universalAnimation = new TileAnimation(100, 100, 2000);
+            this.interval = 50;
         }
 
         public void CreateDefault()
