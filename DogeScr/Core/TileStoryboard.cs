@@ -5,32 +5,32 @@ using System.Text;
 using System.Windows.Media.Animation;
 using System.Windows;
 
-namespace DogeScr
+namespace DogeScr.Core
 {
-    public class DefaultStoryboard: Storyboard
+    public class TileStoryboard : Storyboard
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="element"></param>
-        /// <param name="fadeInDuration"></param>
-        /// <param name="fadeOutDuration"></param>
-        /// <param name="stayDuration"></param>
-        public DefaultStoryboard(UIElement element,long fadeInDuration, long fadeOutDuration, long stayDuration)
+        /// <param name="element">WPF control element (tile)</param>
+        /// <param name="fadeInDuration">ms</param>
+        /// <param name="fadeOutDuration">ms</param>
+        /// <param name="stayDuration">ms</param>
+        public TileStoryboard(UIElement element, long fadeInDuration, long fadeOutDuration, long stayDuration)
         {
             this.RepeatBehavior = new RepeatBehavior(1);
             FadeAnimation fadeIn = new FadeAnimation(FadeAnimation.FadeType.In, fadeInDuration, element);
             this.AddChild(fadeIn);
 
             FadeAnimation fadeOut = new FadeAnimation(FadeAnimation.FadeType.Out, fadeOutDuration, element);
-            fadeOut.BeginTime = new TimeSpan((fadeInDuration+stayDuration) * 1000 * 10);
+            fadeOut.BeginTime = new TimeSpan((fadeInDuration + stayDuration) * 1000 * 10);
             this.AddChild(fadeOut);
         }
 
         public class FadeAnimation : DoubleAnimation
         {
             public enum FadeType
-            { 
+            {
                 In, Out
             }
 

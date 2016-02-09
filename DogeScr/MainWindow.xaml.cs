@@ -1,6 +1,8 @@
-﻿using System;
+﻿using DogeScr.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,53 +25,80 @@ namespace DogeScr
         public MainWindow()
         {
             InitializeComponent();
-            InitWindow();
+            //currently only support one mornitor
+            InitWindowSize();
             Init();
         }
 
         private Configuration configuration;
-        private DoubleAnimation animationTemplate = new DoubleAnimation();
-        public Generator generator;
+        public TileGenerator generator;
+        public readonly string StartupDir = AppDomain.CurrentDomain.BaseDirectory + "\\";
+        public const string configFileName = "config.xml";
 
-        private void InitWindow()
+        private void InitWindowSize()
         {
             // fullscreen
             this.Left = 0;
             this.Top = 0;
-            this.Width= SystemParameters.VirtualScreenWidth;
-            this.Height= SystemParameters.VirtualScreenHeight;
+            this.Width = SystemParameters.VirtualScreenWidth;
+            this.Height = SystemParameters.VirtualScreenHeight;
         }
 
 
         private void Init()
         {
-            //configuration = Configuration.Load<Configuration>("C:\\a.xml");
-            //configuration.Save<Configuration>("C:\\a.xml");
-            generator = new Generator(1, (int)this.Width, (int)this.Height);
+            try
+            {
+                configuration = Configuration.Load<Configuration>(StartupDir + configFileName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                configuration = new Configuration();
+                configuration.CreateDefault();
+            }
+
+
+            try
+            {
+                configuration.Save<Configuration>(StartupDir + configFileName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            generator = new TileGenerator(configuration, (int)this.Width, (int)this.Height);
             generator.WorkerEvent += generator_WorkerEvent;
             generator.Start();
         }
 
+#if DEBUG
         //get current process
         System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
-        void generator_WorkerEvent(object sender, Generator.WorkerEventArgs e)
+        long maxMemory = 0;
+#endif
+        void generator_WorkerEvent(object sender, TileGenerator.WorkerEventArgs e)
         {
 
-            DefaultStoryboard defaultStoryboard = new DefaultStoryboard(e.element, 1, 1, 500);
-                AddElement(e.element.Uid, e.element, MainGrid);
-                defaultStoryboard.Completed += delegate { 
-                    RemoveElement(e.element.Uid, MainGrid);
-                };
+            TileStoryboard tileStoryboard = new TileStoryboard(e.element, 100, 100, 800);
+            //add an tile element and auto remove when completed
+            AddElement(e.element.Uid, e.element, MainGrid);
+            tileStoryboard.Completed += delegate
+            {
+                RemoveElement(e.element.Uid, MainGrid);
+            };
+            //begin animation
+            tileStoryboard.Begin();
 
-            defaultStoryboard.Begin();
-
-            long usedMemory = proc.PrivateMemorySize64 / 1024 / 1024  ;
-            if (usedMemory > max) max = usedMemory;
-            label1.Content = (DateTime.Now - proc.StartTime) + "\n"+
-                usedMemory.ToString()+" MB\nMax: "+max.ToString();
+#if DEBUG
+            long usedMemory = proc.PrivateMemorySize64 / 1024 / 1024;
+            if (usedMemory > maxMemory) maxMemory = usedMemory;//I don't care the thread lock
+            label1.Content = (DateTime.Now - proc.StartTime) + "\n" +
+                usedMemory.ToString() + " MB\nMax: " + maxMemory.ToString();
+#endif
         }
-        long max = 0;
-        
+
+
 
 
         /// <summary>
@@ -82,7 +111,7 @@ namespace DogeScr
         {
             panel.Children.Add(element);
             panel.RegisterName(uid, element);
-            Console.Out.WriteLine("create "+uid);
+            Console.Out.WriteLine("create " + uid);
         }
 
         /// <summary>
@@ -97,15 +126,20 @@ namespace DogeScr
             {
                 panel.Children.Remove(element);
                 panel.UnregisterName(uid);
-                Console.Out.WriteLine("remove "+uid);
+                Console.Out.WriteLine("remove " + uid);
             }
         }
 
         private void MainGrid_MouseMove(object sender, MouseEventArgs e)
         {
 
-                //Environment.Exit(0);
+            //Environment.Exit(0);
 
         }
     }
 }
+
+
+
+
+// by celeron533

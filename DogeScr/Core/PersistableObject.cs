@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace DogeScr
+namespace DogeScr.Core
 {
     public class PersistableObject
     {
@@ -22,7 +22,7 @@ namespace DogeScr
 
         public void Save<T>(string fileName) where T : PersistableObject
         {
-            using (FileStream stream = new FileStream(fileName, FileMode.CreateNew))
+            using (FileStream stream = new FileStream(fileName, FileMode.Create))
             {
                 new XmlSerializer(typeof(T)).Serialize(stream, this);
             }
