@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace DogeScr.Core
@@ -13,18 +14,27 @@ namespace DogeScr.Core
         {
             T result = default(T);
 
-            using (FileStream stream = File.OpenRead(fileName))
+            using (XmlReader xmlReader = XmlReader.Create(fileName))
             {
-                result = new XmlSerializer(typeof(T)).Deserialize(stream) as T;
+                result = new XmlSerializer(typeof(T)).Deserialize(xmlReader) as T;
             }
             return result;
         }
 
+
+
+        XmlWriterSettings xmlWriterSettings = new XmlWriterSettings
+        {
+            Indent = true,
+            OmitXmlDeclaration = false,
+            Encoding = Encoding.UTF8
+        };
+
         public void Save<T>(string fileName) where T : PersistableObject
         {
-            using (FileStream stream = new FileStream(fileName, FileMode.Create))
+            using (XmlWriter xmlWriter = XmlWriter.Create(fileName, xmlWriterSettings))
             {
-                new XmlSerializer(typeof(T)).Serialize(stream, this);
+                new XmlSerializer(typeof(T)).Serialize(xmlWriter, this);
             }
         }
     }
